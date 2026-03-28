@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Second Brain
 
-## Getting Started
+Second Brain is a full-stack app where users can store and organize content links from multiple sources in one place (Twitter/X, YouTube, docs, and more).
 
-First, run the development server:
+## Current Status
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Implemented so far:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Backend authentication with signup/signin
+2. Password hashing with bcrypt
+3. Request validation with Zod (moved to a dedicated validators file)
+4. JWT-based protected routes via middleware
+5. Content create/list/delete routes
+6. Shareable brain link create/remove/read routes
+7. Prisma-based persistence (Mongoose removed)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Frontend (Next.js): app
+2. Backend (Express + Prisma): backend
 
-## Learn More
+## Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+1. Node.js 20+
+2. npm
+3. PostgreSQL (or a valid Postgres-compatible DATABASE_URL)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create or update backend/.env with:
 
-## Deploy on Vercel
+DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/postgres"
+JWT_PASSWORD="replace-with-a-strong-secret"
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Backend Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+From the backend directory:
+
+1. npm install
+2. npx prisma generate
+3. npx prisma migrate dev --name init
+4. npm run dev
+
+Backend runs on port 3000 by default.
+
+## Frontend Setup
+
+From the project root:
+
+1. npm install
+2. npm run dev
+
+Frontend runs on port 3000 by default. If both frontend and backend run together, set one to a different port.
+
+## API Routes (Implemented)
+
+Public routes:
+
+1. POST /api/v1/signup
+2. POST /api/v1/signin
+3. GET /api/v1/brain/:shareLink
+
+Protected routes (Authorization: Bearer <token>):
+
+1. POST /api/v1/content
+2. GET /api/v1/content
+3. DELETE /api/v1/content
+4. POST /api/v1/brain/share
+
+
+## Notes
+
+1. Zod schemas are defined in backend/src/validators.ts
+2. Express request userId typing is handled in backend/src/express.d.ts
+3. JWT middleware is in backend/src/middleware.ts
+4. Prisma client initialization is in backend/src/db.ts

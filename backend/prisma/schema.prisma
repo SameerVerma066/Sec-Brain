@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContentType {
+  twitter
+  youtube
+  document
+}
+
+model User {
+  id        String    @id @default(cuid())
+  username  String    @unique
+  password  String
+  contents  Content[]
+  link      Link?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Content {
+  id        String      @id @default(cuid())
+  title     String
+  link      String
+  type      ContentType
+  tags      String[]    @default([])
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model Link {
+  id        String   @id @default(cuid())
+  hash      String   @unique
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
