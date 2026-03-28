@@ -45,13 +45,54 @@ Backend runs on port 3000 by default.
 
 ## Frontend Setup
 
+
 From the project root:
 
 1. npm install
 2. npm run dev
 
-Frontend runs on port 4000 by default. If both frontend and backend run together, set one to a different port.
+Frontend runs on port 4000 by default.
 
+### Frontend Architecture
+
+**Technology Stack:**
+- Next.js 16.2.1 with React 19.2.4
+- TypeScript 5
+- Axios for API calls
+- Plain CSS for styling (no Tailwind)
+
+**Key Files:**
+- `app/page.tsx` - Root page with authentication check (shows LoginPage or Dashboard)
+- `app/layout.tsx` - Root layout with global styles
+- `app/styles.css` - All application styling
+- `lib/api.ts` - Centralized API client with automatic Bearer token injection
+- `app/share/[hash]/page.tsx` - Public shared brain view page
+
+**Components:**
+- `components/LoginPage.tsx` - Signup/Signin form with toggle between modes
+- `components/Dashboard.tsx` - Main authenticated app with content grid and filters
+- `components/Sidebar.tsx` - Navigation with content type filters
+- `components/ContentCard.tsx` - Individual content item display
+- `components/AddContentModal.tsx` - Modal for adding new content
+- `components/ShareModal.tsx` - Modal for generating shareable links
+
+**Features:**
+- JWT-based authentication (token stored in localStorage)
+- Protected routes (dashboard only accessible with valid token)
+- Content filtering by type (Tweets, Videos, Documents, Links, Tags)
+- Add/delete content functionality
+- Share brain with unique hash link
+- Responsive design with sidebar navigation
+
+### Environment Variables
+
+Frontend uses one environment variable in `.env.local`:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+This points to the backend API server.
 ## API Routes (Implemented)
 
 Public routes:
