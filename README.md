@@ -50,7 +50,7 @@ From the project root:
 1. npm install
 2. npm run dev
 
-Frontend runs on port 3000 by default. If both frontend and backend run together, set one to a different port.
+Frontend runs on port 4000 by default. If both frontend and backend run together, set one to a different port.
 
 ## API Routes (Implemented)
 
