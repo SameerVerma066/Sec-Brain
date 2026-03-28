@@ -17,7 +17,10 @@ import {
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+	origin: ["http://localhost:3000", "http://localhost:4000", "http://127.0.0.1:3000", "http://127.0.0.1:4000"],
+	credentials: true,
+}));
 
 app.post("/api/v1/signup", async (req, res) => {
 	const parsed = signupSchema.safeParse(req.body);

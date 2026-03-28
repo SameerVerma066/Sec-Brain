@@ -19,7 +19,11 @@ interface ContentItem {
   };
 }
 
-export default function Dashboard() {
+interface DashboardProps {
+  onLogout: () => void;
+}
+
+export default function Dashboard({ onLogout }: DashboardProps) {
   const [contentList, setContentList] = useState<ContentItem[]>([]);
   const [filteredContent, setFilteredContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,7 +87,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchContent();
+    const timer = setTimeout(() => {
+      fetchContent();
+    }, 300);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleFilter = (filter: string) => {
@@ -95,10 +102,7 @@ export default function Dashboard() {
       <Sidebar
         activeFilter={activeFilter}
         onFilterChange={handleFilter}
-        onLogout={() => {
-          localStorage.removeItem("token");
-          window.location.reload();
-        }}
+        onLogout={onLogout}
       />
 
       <div className="flex-1 flex flex-col">
