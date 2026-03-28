@@ -40,76 +40,76 @@ export default function ShareModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Share Your Second Brain
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
-          >
+    <div className="modal-overlay">
+      <div className="modal">
+        <div className="modal-header">
+          <h2 className="modal-title">Share Your Second Brain</h2>
+          <button onClick={onClose} className="close-button">
             ✕
           </button>
         </div>
 
-        <p className="text-gray-600 mb-6">
+        <p style={{ marginBottom: "1rem", color: "#4b5563" }}>
           Share your entire collection of notes, documents, tweets, and videos
           with others. They'll be able to import your content into their own
           Second Brain.
         </p>
 
         {shareLink ? (
-          <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Your share link:</p>
-              <div className="flex gap-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ padding: "1rem", backgroundColor: "#dbeafe", borderRadius: "0.5rem" }}>
+              <p style={{ fontSize: "0.875rem", color: "#4b5563", marginBottom: "0.5rem" }}>
+                Your share link:
+              </p>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
                 <input
                   type="text"
                   value={fullLink || ""}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-blue-200 rounded-lg bg-white text-sm font-mono"
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem 0.75rem",
+                    border: "1px solid #7dd3fc",
+                    borderRadius: "0.5rem",
+                    backgroundColor: "white",
+                    fontSize: "0.875rem",
+                    fontFamily: "monospace",
+                  }}
                 />
                 <button
                   onClick={handleCopy}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition"
+                  className="btn-primary"
+                  style={{ color: "#0284c7", backgroundColor: "#dbeafe" }}
                 >
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
               {contentCount} items will be shared
             </p>
 
-            <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition"
-              >
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button onClick={onClose} className="btn-cancel" style={{ flex: 1 }}>
                 Done
               </button>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
               {contentCount} items will be shared
             </p>
 
-            <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition"
-              >
+            <div className="modal-actions">
+              <button onClick={onClose} className="btn-cancel">
                 Cancel
               </button>
               <button
                 onClick={handleShare}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition disabled:bg-gray-400"
+                className="btn-confirm"
               >
                 {loading ? "Generating..." : "Share Brain"}
               </button>

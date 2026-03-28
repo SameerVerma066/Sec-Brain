@@ -98,51 +98,49 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="dashboard-container">
       <Sidebar
         activeFilter={activeFilter}
         onFilterChange={handleFilter}
         onLogout={onLogout}
       />
 
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 px-8 py-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">All Notes</h1>
-          <div className="flex gap-4">
+      <div className="main-content">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">All Notes</h1>
+          <div className="header-buttons">
             <button
               onClick={() => setShowShareModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-semibold transition"
+              className="btn-secondary"
             >
               <span>🔗</span> Share Brain
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg font-semibold transition"
+              className="btn-primary"
             >
               <span>➕</span> Add Content
             </button>
           </div>
         </div>
 
-        {/* Content Grid */}
-        <div className="flex-1 overflow-auto p-8">
+        <div className="content-area">
           {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            <div className="loading-spinner">
+              <div className="spinner"></div>
             </div>
           ) : filteredContent.length === 0 ? (
-            <div className="flex flex-col justify-center items-center h-full">
-              <p className="text-gray-500 text-lg">No content yet.</p>
+            <div className="empty-state">
+              <p className="empty-text">No content yet.</p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
+                className="btn-empty"
               >
                 Add your first content
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="content-grid">
               {filteredContent.map((item) => (
                 <ContentCard
                   key={item.id}
