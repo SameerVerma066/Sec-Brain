@@ -1,0 +1,87 @@
+name: Frontend CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "components/**"
+      - "lib/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "next.config.ts"
+      - "eslint.config.mjs"
+      - "postcss.config.mjs"
+      - "tailwind.config.js"
+      - ".github/workflows/frontend-ci-cd.yml"
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "components/**"
+      - "lib/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "next.config.ts"
+      - "eslint.config.mjs"
+      - "postcss.config.mjs"
+      - "tailwind.config.js"
+      - ".github/workflows/frontend-ci-cd.yml"
+
+concurrency:
+  group: frontend-cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Frontend Build and Validate
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3000
+
+  cd:
+    name: Frontend Deploy
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Trigger frontend deployment webhook
+        if: secrets.FRONTEND_DEPLOY_WEBHOOK_URL != ''
+        run: |
+          curl -fsSL -X POST "$FRONTEND_DEPLOY_WEBHOOK_URL"
+        env:
+          FRONTEND_DEPLOY_WEBHOOK_URL: ${{ secrets.FRONTEND_DEPLOY_WEBHOOK_URL }}
+
+      - name: Skip frontend deploy when webhook is not configured
+        if: secrets.FRONTEND_DEPLOY_WEBHOOK_URL == ''
+        run: echo "No frontend deploy webhook configured. Set FRONTEND_DEPLOY_WEBHOOK_URL to enable CD."
