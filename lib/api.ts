@@ -35,9 +35,14 @@ export const content = {
     type: "twitter" | "youtube" | "document"
   ) =>
     apiClient.post("/api/v1/content", { title, link, type }),
-  list: () => apiClient.get("/api/v1/content"),
+  list: (params?: { type?: "twitter" | "youtube" | "document"; tag?: string }) =>
+    apiClient.get("/api/v1/content", { params }),
   delete: (contentId: string) =>
     apiClient.delete("/api/v1/content", { data: { contentId } }),
+};
+
+export const tags = {
+  list: () => apiClient.get("/api/v1/tags"),
 };
 
 export const share = {

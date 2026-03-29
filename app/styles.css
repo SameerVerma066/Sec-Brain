@@ -180,6 +180,57 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-tags-section {
+  padding: 0 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.sidebar-empty-tags {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.sidebar-tag-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  color: #374151;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar-tag-button:hover {
+  background-color: #f3f4f6;
+}
+
+.sidebar-tag-button.active {
+  background-color: #ede9fe;
+  border-color: #d8b4fe;
+  color: #7e22ce;
+}
+
+.sidebar-tag-count {
+  background-color: #e5e7eb;
+  color: #4b5563;
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.72rem;
 }
 
 .nav-button {
@@ -444,6 +495,16 @@ html, body {
   color: #166534;
   font-size: 0.75rem;
   border-radius: 0.25rem;
+  border: 1px solid #dcfce7;
+  cursor: default;
+}
+
+.card-tags button.tag {
+  cursor: pointer;
+}
+
+.card-tags button.tag:hover {
+  background-color: #dcfce7;
 }
 
 .card-footer {
@@ -610,6 +671,13 @@ html, body {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .sidebar-tags-section {
+    min-width: 15rem;
+    padding: 0;
+    margin-bottom: 0;
   }
 
   .nav-button {

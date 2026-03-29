@@ -5,6 +5,11 @@ import jwt from "jsonwebtoken";
 import { JWT_PASSWORD } from "./config";
 import { prisma } from "./db";
 import { userMiddleware } from "./middleware";
+import {
+	deleteContentEmbedding,
+	deriveTagsForContent,
+	upsertContentEmbedding,
+} from "./semantic";
 import { random } from "./utils";
 import {
 	contentSchema,
@@ -15,6 +20,7 @@ import {
 } from "./validators";
 
 const app = express();
+const ALLOWED_CONTENT_TYPES = new Set(["twitter", "youtube", "document"]);
 
 app.use(express.json());
 app.use(cors({
@@ -120,18 +126,38 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 	const { link, title, type } = parsed.data;
 
 	try {
-		await prisma.content.create({
+		const { tags, vector } = await deriveTagsForContent({
+			userId: req.userId,
+			title,
+			link,
+			type,
+		});
+
+		const createdContent = await prisma.content.create({
 			data: {
 				link,
 				type,
 				title,
 				userId: req.userId,
-				tags: [],
+				tags,
 			},
 		});
 
+		if (vector) {
+			void upsertContentEmbedding({
+				contentId: createdContent.id,
+				userId: req.userId,
+				title,
+				link,
+				type,
+				tags,
+				vector,
+			});
+		}
+
 		return res.json({
 			message: "Content added",
+			tags,
 		});
 	} catch {
 		return res.status(500).json({
@@ -147,10 +173,22 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 		});
 	}
 
+	const tagQuery =
+		typeof req.query.tag === "string" && req.query.tag.trim().length > 0
+			? req.query.tag.trim().toLowerCase()
+			: undefined;
+	const typeQuery =
+		typeof req.query.type === "string" &&
+		ALLOWED_CONTENT_TYPES.has(req.query.type)
+			? (req.query.type as "twitter" | "youtube" | "document")
+			: undefined;
+
 	try {
 		const content = await prisma.content.findMany({
 			where: {
 				userId: req.userId,
+				...(tagQuery ? { tags: { has: tagQuery } } : {}),
+				...(typeQuery ? { type: typeQuery } : {}),
 			},
 			include: {
 				user: {
@@ -165,6 +203,52 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 	} catch {
 		return res.status(500).json({
 			message: "Failed to fetch content",
+		});
+	}
+});
+
+app.get("/api/v1/tags", userMiddleware, async (req, res) => {
+	if (!req.userId) {
+		return res.status(403).json({
+			message: "You are not logged in",
+		});
+	}
+
+	try {
+		const contentWithTags = await prisma.content.findMany({
+			where: {
+				userId: req.userId,
+			},
+			select: {
+				tags: true,
+			},
+		});
+
+		const tagCounts = new Map<string, number>();
+
+		for (const contentItem of contentWithTags) {
+			for (const tag of contentItem.tags) {
+				const normalizedTag = tag.trim().toLowerCase();
+				if (!normalizedTag) {
+					continue;
+				}
+				tagCounts.set(normalizedTag, (tagCounts.get(normalizedTag) || 0) + 1);
+			}
+		}
+
+		const tags = Array.from(tagCounts.entries())
+			.map(([tag, count]) => ({ tag, count }))
+			.sort((a, b) => {
+				if (b.count === a.count) {
+					return a.tag.localeCompare(b.tag);
+				}
+				return b.count - a.count;
+			});
+
+		return res.json({ tags });
+	} catch {
+		return res.status(500).json({
+			message: "Failed to fetch tags",
 		});
 	}
 });
@@ -187,12 +271,16 @@ app.delete("/api/v1/content", userMiddleware, async (req, res) => {
 	const { contentId } = parsed.data;
 
 	try {
-		await prisma.content.deleteMany({
+		const deleted = await prisma.content.deleteMany({
 			where: {
 				id: contentId,
 				userId: req.userId,
 			},
 		});
+
+		if (deleted.count > 0) {
+			void deleteContentEmbedding(contentId);
+		}
 
 		return res.json({
 			message: "Deleted",

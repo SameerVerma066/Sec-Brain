@@ -10,6 +10,7 @@ interface ContentCardProps {
     link: string;
   };
   onDelete: () => void;
+  onTagClick?: (tag: string) => void;
 }
 
 const typeIcons: Record<string, string> = {
@@ -18,7 +19,7 @@ const typeIcons: Record<string, string> = {
   document: "📄",
 };
 
-export default function ContentCard({ content, onDelete }: ContentCardProps) {
+export default function ContentCard({ content, onDelete, onTagClick }: ContentCardProps) {
   const date = new Date(content.createdAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -63,9 +64,20 @@ export default function ContentCard({ content, onDelete }: ContentCardProps) {
       {content.tags.length > 0 && (
         <div className="card-tags">
           {content.tags.slice(0, 2).map((tag, idx) => (
-            <span key={idx} className="tag">
-              #{tag}
-            </span>
+            onTagClick ? (
+              <button
+                key={idx}
+                className="tag"
+                onClick={() => onTagClick(tag)}
+                type="button"
+              >
+                #{tag}
+              </button>
+            ) : (
+              <span key={idx} className="tag">
+                #{tag}
+              </span>
+            )
           ))}
         </div>
       )}

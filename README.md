@@ -31,15 +31,22 @@ Create or update backend/.env with:
 
 DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/postgres"
 JWT_PASSWORD="replace-with-a-strong-secret"
+GEMINI_API_KEY="replace-with-your-gemini-api-key"
+GEMINI_EMBEDDING_MODEL="gemini-embedding-001"
+GEMINI_EMBEDDING_DIMENSIONS="768"
+QDRANT_URL="http://localhost:6333"
+QDRANT_API_KEY=""
+QDRANT_COLLECTION="second_brain_content"
 
 ## Backend Setup
 
 From the backend directory:
 
 1. npm install
-2. npx prisma generate
-3. npx prisma migrate dev --name init
-4. npm run dev
+2. npm install @google/genai @qdrant/js-client-rest
+3. npx prisma generate
+4. npx prisma migrate dev --name init
+5. npm run dev
 
 Backend runs on port 3000 by default.
 
@@ -79,7 +86,8 @@ Frontend runs on port 4000 by default.
 **Features:**
 - JWT-based authentication (token stored in localStorage)
 - Protected routes (dashboard only accessible with valid token)
-- Content filtering by type (Tweets, Videos, Documents, Links, Tags)
+- Auto-generated tags for content using embeddings + Qdrant similarity
+- Content filtering by type and by tag
 - Add/delete content functionality
 - Share brain with unique hash link
 - Responsive design with sidebar navigation
@@ -104,9 +112,10 @@ Public routes:
 Protected routes (Authorization: Bearer <token>):
 
 1. POST /api/v1/content
-2. GET /api/v1/content
+2. GET /api/v1/content?type=<twitter|youtube|document>&tag=<tagName>
 3. DELETE /api/v1/content
 4. POST /api/v1/brain/share
+5. GET /api/v1/tags
 
 
 ## Notes
