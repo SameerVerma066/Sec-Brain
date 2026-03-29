@@ -132,35 +132,3 @@ This repo now includes two GitHub Actions workflows:
 1. `.github/workflows/frontend-ci-cd.yml`
 2. `.github/workflows/backend-ci-cd.yml`
 
-### Frontend CI/CD
-
-Runs when frontend files change on pull requests and pushes to main.
-
-1. Installs frontend dependencies with npm ci
-2. Runs frontend lint
-3. Builds frontend
-
-Deploy step:
-
-1. Triggers `FRONTEND_DEPLOY_WEBHOOK_URL` on push to main
-
-### Backend CI/CD
-
-Runs when backend files change on pull requests and pushes to main.
-
-1. Installs backend dependencies with npm ci
-2. Generates Prisma client
-3. Builds backend
-
-Deploy step:
-
-1. Triggers `BACKEND_DEPLOY_WEBHOOK_URL` on push to main
-
-### CD Secrets
-
-Set one or both GitHub repository secrets:
-
-1. FRONTEND_DEPLOY_WEBHOOK_URL
-2. BACKEND_DEPLOY_WEBHOOK_URL
-
-If a relevant secret is not configured, that deploy workflow exits cleanly with a skip message.
